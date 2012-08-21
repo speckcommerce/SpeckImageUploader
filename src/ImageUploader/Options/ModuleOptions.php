@@ -1,6 +1,6 @@
 <?php
 
-namespace ImageUploader;
+namespace ImageUploader\Options;
 
 use Zend\Stdlib\AbstractOptions;
 
@@ -19,8 +19,8 @@ class ModuleOptions extends AbstractOptions
 
     protected $resizeOversized = false;
 
-    protected $destination;
-    protected $overWriteAllowed = false;
+    protected $destination = '/tmp';
+    protected $overwrite = false;
 
  /**
   * Get defaultFileExtension.
@@ -223,23 +223,24 @@ class ModuleOptions extends AbstractOptions
      $this->destination = $destination;
  }
 
+
  /**
-  * Get overWriteAllowed.
+  * Get overwrite.
   *
-  * @return overWriteAllowed.
+  * @return overwrite.
   */
- function getOverWriteAllowed()
+ function getOverwrite()
  {
-     return $this->overWriteAllowed;
+     return $this->overwrite;
  }
 
  /**
-  * Set overWriteAllowed.
+  * Set overwrite.
   *
-  * @param overWriteAllowed the value to set.
+  * @param overwrite the value to set.
   */
- function setOverWriteAllowed($overWriteAllowed)
+ function setOverwrite($overwrite)
  {
-     $this->overWriteAllowed = $overWriteAllowed;
+     $this->overwrite = $overwrite;
  }
 }

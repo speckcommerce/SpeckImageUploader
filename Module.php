@@ -32,7 +32,9 @@ class Module implements AutoloaderProviderInterface
         return array(
             'factories' => array(
                 'imageUploader' => function ($sm) {
-                    return new \ImageUploader\View\Helper\ImageUploader(null);
+                    $sm = $sm->getServiceLocator();
+                    $form = $sm->get('image_uploader_form');
+                    return new \ImageUploader\View\Helper\ImageUploader($form);
                 },
             ),
         );

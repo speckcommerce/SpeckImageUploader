@@ -10,57 +10,60 @@ class Uploader implements ServiceLocatorAwareInterface
 
     protected $serviceLocator;
 
-    public function UploadImage($image, $destination=null)
+    public function UploadImage($image)
     {
-        if (null === $destination) {
-            $destination = $this->getOptions()->getDestination();
-        }
-        $image = $this->prepareImageForUpload();
-    }
-
-    public function PrepareImageForUpload($image)
-    {
-        $results = array();
-
-        if (true === $this->getOptions()->getUseMax()) {
-            $width = 600;//todo:this
-            if ($width > $this->getOptions()->getMaxWidth()) {
-                $results['wide'] = 'Image exceeds the max width: ' . $this->getOptions()->getMaxWidth();
+        try{
+            if ($image["error"] > 0){
+                throw new \Exception($image["error"]);
             }
-            $height = 600;//todo:this
-            if ($width > $this->getOptions()->getMaxHeight()) {
-                $results['tall'] = 'Image exceeds the max height: ' . $this->getOptions()->getMaxHeight();
-            }
-        }
+            $imageModel = new \ImageUploader\Model\Image($image);
 
-        if (true === $this->getOptions()->getUseMin()) {
-            $width = 600;//todo:this
-            if ($width < $this->getOptions()->getMinWidth()) {
-                $results['narrow'] = 'Image below the min width: ' . $this->getOptions()->getMinWidth();
-            }
-            $height = 600;//todo:this
-            if ($width < $this->getOptions()->getMinHeight()) {
-                $results['short'] = 'Image below the min height: ' . $this->getOptions()->getMinHeight();
-            }
-        }
+            $fileLocation = $this->getOptions()->getDestination() . '/' . $imageModel->getFileName();
 
-        if (isset($results['short']) || isset($results['narrow'])) {
-            $errorMsg  = (isset($results['short'])  ? $results['short']  . "\n" : '');
-            $errorMsg .= (isset($results['narrow']) ? $results['narrow'] . "\n" : '');
-            throw new \Exception($errorMsg);
-        }
+            if (false === is_writable($this->getOptions()->getDestination())) {
+                throw new \Exception("directory not writable: " . $this->getOptions()->getDestination());
+            }
+            if (false === $this->getOptions()->getOverwrite() && file_exists($fileLocation)) {
+                throw new \Exception("file already exists: " . $fileLocation . "\nOptions do not allow overwrite");
+            }
 
-        if ((isset($results['tall']) || isset($results['wide']))) {
-            if (false === $this->getOptions()->getResizeOversized()) {
-                $errorMsg  = (isset($results['tall']) ? $results['tall'] . " and options do not allow resize\n" : '');
-                $errorMsg .= (isset($results['wide']) ? $results['wide'] . " and options do not allow resize\n" : '');
+            //test dimensions
+            $results = array();
+            if (true === $this->getOptions()->getUseMax()) {
+                if ($imageModel->getWidth() > $this->getOptions()->getMaxWidth()) {
+                    $results['wide'] = 'Image exceeds the max width: ' . $this->getOptions()->getMaxWidth();
+                }
+                if ($imageModel->getHeight() > $this->getOptions()->getMaxHeight()) {
+                    $results['tall'] = 'Image exceeds the max height: ' . $this->getOptions()->getMaxHeight();
+                }
+            }
+            if (true === $this->getOptions()->getUseMin()) {
+                if ($imageModel->getWidth() < $this->getOptions()->getMinWidth()) {
+                    $results['narrow'] = 'Image below the min width: ' . $this->getOptions()->getMinWidth();
+                }
+                if ($imageModel->getHeight() < $this->getOptions()->getMinHeight()) {
+                    $results['short'] = 'Image below the min height: ' . $this->getOptions()->getMinHeight();
+                }
+            }
+            if (isset($results['short']) || isset($results['narrow'])) {
+                $errorMsg  = (isset($results['short'])  ? $results['short']  . "\n" : '');
+                $errorMsg .= (isset($results['narrow']) ? $results['narrow'] . "\n" : '');
                 throw new \Exception($errorMsg);
-            } else {
-                $image = $this->resizeImage($image);
             }
+            if (isset($results['tall']) || isset($results['wide'])) {
+                if (false === $this->getOptions()->getResizeOversized()) {
+                    $errorMsg  = (isset($results['tall']) ? $results['tall'] . " and options do not allow resize\n" : '');
+                    $errorMsg .= (isset($results['wide']) ? $results['wide'] . " and options do not allow resize\n" : '');
+                    throw new \Exception($errorMsg);
+                } else {
+                    $imageModel = $this->resizeImage($imageModel);
+                }
+            }
+            move_uploaded_file($imageModel->getTempName(), $fileLocation);
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
-
-        return $image;
+        return 'Upload Success: ' . $fileLocation;
     }
 
     function getOptions()

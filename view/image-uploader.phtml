@@ -1,1 +1,10 @@
-<div style="border:3px solid red">uploader goes here!!</div>
+<?php
+$form->prepare();
+$form->setAttribute('method', 'post');
+$form->setAttribute('action', '/image-uploader/upload-image');
+$form->setAttribute('enctype', 'multipart/form-data');
+?>
+<?=$this->form()->openTag($form);?>
+    <?=$this->formInput($form->get('image')); ?><br/>
+    <input type="submit" value="Upload"/>
+</form>
