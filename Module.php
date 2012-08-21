@@ -44,7 +44,7 @@ class Module implements AutoloaderProviderInterface
             'factories' => array(
                 'image_uploader_options' => function ($sm) {
                     $config = $sm->get('Config');
-                    return new \ImageJoiner\Options\ModuleOptions(isset($config['image_uploader']) ? $config['image_uploader'] : array());
+                    return new \ImageUploader\Options\ModuleOptions(isset($config['image_uploader']) ? $config['image_uploader'] : array());
                 },
             ),
         );
