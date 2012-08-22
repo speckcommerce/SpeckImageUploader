@@ -48,6 +48,12 @@ class Module implements AutoloaderProviderInterface
                     $config = $sm->get('Config');
                     return new \ImageUploader\Options\ModuleOptions(isset($config['image_uploader']) ? $config['image_uploader'] : array());
                 },
+                'image_uploader_form' => function ($sm) {
+                    $form = new \ImageUploader\Form\Image();
+                    $form->setHydrator(new \Zend\Stdlib\Hydrator\ClassMethods());
+                    $form->setInputFilter($sm->get('image_uploader_filter'));
+                    return $form;
+                },
             ),
         );
     }

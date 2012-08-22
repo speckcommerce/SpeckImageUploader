@@ -17,6 +17,9 @@ class Image extends ZendForm
             'attributes' => array(
                 'type' => 'file'
             ),
+            'options' => array(
+                'label' => 'File',
+            ),
         ));
     }
 }

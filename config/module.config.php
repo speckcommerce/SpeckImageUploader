@@ -38,7 +38,6 @@ return array(
     ),
     'service_manager' => array(
         'invokables' => array(
-            'image_uploader_form'    => 'ImageUploader\Form\Image',
             'image_uploader_filter'  => 'ImageUploader\Filter\Image',
             'image_uploader_service' => 'ImageUploader\Service\Uploader',
         ),
