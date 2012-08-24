@@ -10,6 +10,11 @@ class Image extends InputFilter
     {
         $this->add(array(
             'name' => 'image',
+            'validators' => array(
+                array(
+                    'name' => 'Zend\Validator\File\Upload',
+                ),
+            ),
         ));
     }
 }

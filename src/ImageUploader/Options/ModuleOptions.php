@@ -6,8 +6,9 @@ use Zend\Stdlib\AbstractOptions;
 
 class ModuleOptions extends AbstractOptions
 {
-    protected $defaultFileExtension = 'jpg';
-    protected $convertToDefault = 'true';
+    protected $allowedFileTypes = array('jpg' => 'jpg', 'png' => 'png', 'gif' => 'gif');
+    protected $defaultFileType = 'jpg';
+    protected $convertToDefault = 'false';
 
     protected $maxWidth = 1024;
     protected $maxHeight = 1024;
@@ -21,26 +22,6 @@ class ModuleOptions extends AbstractOptions
 
     protected $destination = '/tmp';
     protected $overwrite = false;
-
- /**
-  * Get defaultFileExtension.
-  *
-  * @return defaultFileExtension.
-  */
- function getDefaultFileExtension()
- {
-     return $this->defaultFileExtension;
- }
-
- /**
-  * Set defaultFileExtension.
-  *
-  * @param defaultFileExtension the value to set.
-  */
- function setDefaultFileExtension($defaultFileExtension)
- {
-     $this->defaultFileExtension = $defaultFileExtension;
- }
 
  /**
   * Get convertToDefault.
