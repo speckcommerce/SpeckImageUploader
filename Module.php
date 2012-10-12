@@ -1,6 +1,6 @@
 <?php
 
-namespace ImageUploader;
+namespace SpeckImageUploader;
 
 use Zend\ModuleManager;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
@@ -15,7 +15,8 @@ class Module implements AutoloaderProviderInterface
             ),
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    'ImageUploader' => __DIR__ . '/src/ImageUploader',
                 )
             )
         );
