@@ -3,15 +3,25 @@
 namespace ImageUploader\Service;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerAwareInterface;
 
-class Uploader implements ServiceLocatorAwareInterface
+class Uploader implements ServiceLocatorAwareInterface, EventManagerAwareInterface
 {
     protected $options;
 
     protected $serviceLocator;
 
-    public function UploadImage($image)
+    protected $eventManager;
+
+    public function UploadImage($image, $params=null)
     {
+        $this->getEventManager()->trigger('fileupload.pre', $this, array(
+            'image' => $image,
+            'params' => $params,
+            'options' => $this->getOptions()
+        ));
         try{
             if ($image["error"] > 0){
                 throw new \Exception($image["error"]);
@@ -24,7 +34,7 @@ class Uploader implements ServiceLocatorAwareInterface
                 throw new \Exception("directory not writable: " . $this->getOptions()->getDestination());
             }
             if (false === $this->getOptions()->getOverwrite() && file_exists($fileLocation)) {
-                throw new \Exception("file already exists: " . $fileLocation . "\nOptions do not allow overwrite");
+                throw new \Exception("file already exists: " . $fileLocation . " - Options do not allow overwrite");
             }
 
             //test dimensions
@@ -52,8 +62,8 @@ class Uploader implements ServiceLocatorAwareInterface
             }
             if (isset($results['tall']) || isset($results['wide'])) {
                 if (false === $this->getOptions()->getResizeOversized()) {
-                    $errorMsg  = (isset($results['tall']) ? $results['tall'] . " and options do not allow resize\n" : '');
-                    $errorMsg .= (isset($results['wide']) ? $results['wide'] . " and options do not allow resize\n" : '');
+                    $errorMsg  = (isset($results['tall']) ? $results['tall'] . " - Options do not allow resize\n" : '');
+                    $errorMsg .= (isset($results['wide']) ? $results['wide'] . " - Options do not allow resize\n" : '');
                     throw new \Exception($errorMsg);
                 } else {
                     $imageModel = $this->resizeImage($imageModel);
@@ -63,6 +73,9 @@ class Uploader implements ServiceLocatorAwareInterface
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+
+        $this->getEventManager()->trigger('fileupload.post', $this, array('fileName' => $imageModel->getFileName(), 'params' => $params));
+
         return 'Upload Success: ' . $fileLocation;
     }
 
@@ -87,5 +100,27 @@ class Uploader implements ServiceLocatorAwareInterface
     function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
+    }
+
+    /**
+     * @return eventManager
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
+    }
+
+    /**
+     * @param $eventManager
+     * @return self
+     */
+    public function setEventManager(EventManagerInterface $eventManager)
+    {
+        $eventManager->setIdentifiers(array(
+            __CLASS__,
+            get_called_class(),
+        ));
+        $this->eventManager = $eventManager;
+        return $this;
     }
 }

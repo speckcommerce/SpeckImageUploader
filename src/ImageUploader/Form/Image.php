@@ -22,4 +22,18 @@ class Image extends ZendForm
             ),
         ));
     }
+
+    public function addElements(array $elements)
+    {
+        foreach ($elements as $name => $value)
+        {
+            $this->add(array(
+                'name' => $name,
+                'attributes' => array(
+                    'value' => $value,
+                    'type' => 'hidden',
+                ),
+            ));
+        }
+    }
 }

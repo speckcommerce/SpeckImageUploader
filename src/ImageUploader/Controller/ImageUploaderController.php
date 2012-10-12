@@ -10,24 +10,20 @@ class ImageUploaderController extends AbstractActionController
     public function uploadImageAction()
     {
         $fileName = $_FILES['image']['name'];
+        $params = $this->params()->fromPost();
+
+        $uploader = $this->getServiceLocator()->get('image_uploader_service');
         $validator = new \Zend\Validator\File\Upload();
-
         if($validator->isValid($fileName)) {
-            echo $this->getServiceLocator()->get('image_uploader_service')->uploadImage($_FILES['image']);
+            $response = $uploader->uploadImage($_FILES['image'], $params);
         } else {
-            var_dump($validator->getMessages());
-            die();
-
+            $response = implode('', $validator->getMessages());
         }
 
-        $form = $this->getServiceLocator()->get('image_uploader_form');
-        $view = new ViewModel(array('form' => $form));
-        $view->setTerminal(true)->setTemplate('/image-uploader.phtml');
-        return $view;
-    }
+        $view = new ViewModel(array(
+            'response' => $response,
+        ));
 
-    public function uploadImageJsonAction()
-    {
-        return json_encode($this->getServiceLocator()->get('image_uploader_service')->uploadImage($_FILES['image']));
+        return $view->setTemplate('response')->setTerminal(true);
     }
 }

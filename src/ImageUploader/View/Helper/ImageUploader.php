@@ -13,10 +13,14 @@ class ImageUploader extends AbstractHelper
         $this->setForm($form);
     }
 
-    public function __invoke()
+    public function __invoke($elements=null)
     {
         $view = $this->getView();
-        $uploader = new ViewModel(array('form' => $this->getForm()));
+        $form = $this->getForm();
+        if ($elements) {
+            $form->addElements($elements);
+        }
+        $uploader = new ViewModel(array('form' => $form));
         $uploader->setTemplate('image-uploader.phtml');
 
         return $view->render($uploader);

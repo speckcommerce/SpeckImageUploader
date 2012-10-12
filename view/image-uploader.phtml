@@ -1,10 +1,15 @@
 <?php
 $form->prepare();
 $form->setAttribute('method', 'post');
+$form->setAttribute('id', 'image-upload');
 $form->setAttribute('action', '/image-uploader/upload-image');
 $form->setAttribute('enctype', 'multipart/form-data');
+$form->setAttribute('target' , 'imageUploadFrame');
 ?>
 <?=$this->form()->openTag($form);?>
-    <?=$this->formRow($form->get('image')); ?><br/>
-    <input type="submit" value="Upload"/>
+    <? foreach($form->getElements() as $element) : ?>
+        <?=$this->formInput($element);?>
+    <? endforeach; ?>
+    <input type="submit">
 </form>
+<iframe style="width:0; height:0; border:0" id="imageUploadFrame" name="imageUploadFrame"></iframe>
