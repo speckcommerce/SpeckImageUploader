@@ -1,0 +1,21 @@
+{
+    "name": "speckcommerce/speck-image-uploader",
+    "description": "",
+    "type": "library",
+    "keywords": [
+        "zf2"
+    ],
+    "homepage": "http://github.com/speckcommerce/SpeckImageUploader",
+    "authors": [
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-0": {
+            "ImageUploader": "src/",
+        },
+        "classmap": [
+            "./"
+        ]
+    }
+}
